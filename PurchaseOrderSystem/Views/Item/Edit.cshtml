@@ -1,0 +1,53 @@
+﻿@model PurchaseOrderSystem.Models.Item
+
+<h2>Edit Item</h2>
+
+<form asp-action="Edit" method="post" onsubmit="return validateItemForm()">
+
+    <input type="hidden" asp-for="ItemId" />
+
+
+
+    <label>Item Name</label>
+    <input asp-for="ItemName" id="itemName" class="form-control" />
+    <span asp-validation-for="ItemName" class="text-danger"></span>
+    <small id="nameError" class="text-danger"></small>
+
+    <br />
+
+    <label>Unit Price</label>
+    <input asp-for="UnitPrice" id="unitPrice" class="form-control" />
+    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+
+    <br />
+
+    <label>Available Quantity</label>
+    <input asp-for="AvailableQuantity" id="qty" class="form-control" />
+    <span asp-validation-for="AvailableQuantity" class="text-danger"></span>
+
+    <br />
+
+    <label>Is Active</label>
+    <input asp-for="IsActive" type="checkbox" />
+
+    <br /><br />
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+<script>
+    function validateItemForm() {
+
+        let name = document.getElementById("itemName").value;
+        let regex = /^[A-Za-z\s]+$/;
+
+        if (!regex.test(name)) {
+            document.getElementById("nameError").innerText =
+                "Item Name must contain only alphabets.";
+            return false;
+        }
+
+        return true;
+    }
+</script>

@@ -1,0 +1,30 @@
+[
+  {
+    "ItemId": 1,
+    "ItemName": "Keyboard",
+    "UnitPrice": 700,
+    "AvailableQuantity": 60,
+    "IsActive": true
+  },
+  {
+    "ItemId": 2,
+    "ItemName": "Bat",
+    "UnitPrice": 1200,
+    "AvailableQuantity": 20,
+    "IsActive": true
+  },
+  {
+    "ItemId": 3,
+    "ItemName": "Mouse",
+    "UnitPrice": 300,
+    "AvailableQuantity": 65,
+    "IsActive": true
+  },
+  {
+    "ItemId": 4,
+    "ItemName": "Brush",
+    "UnitPrice": 50,
+    "AvailableQuantity": 300,
+    "IsActive": true
+  }
+]

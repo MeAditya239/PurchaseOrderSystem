@@ -1,0 +1,16 @@
+[
+  {
+    "VendorId": 1,
+    "VendorName": "Aditya",
+    "ContactNumber": "9307076614",
+    "Email": "aditya239@gmail.com",
+    "IsActive": true
+  },
+  {
+    "VendorId": 2,
+    "VendorName": "Virat",
+    "ContactNumber": "8978675642",
+    "Email": "virat@gmail.com",
+    "IsActive": true
+  }
+]

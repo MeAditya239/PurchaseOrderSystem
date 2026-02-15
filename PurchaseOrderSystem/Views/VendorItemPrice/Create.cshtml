@@ -1,0 +1,34 @@
+﻿@model PurchaseOrderSystem.Models.VendorItemPrice
+
+<h2>Add Vendor Item Price</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+
+<form asp-action="Create" method="post">
+
+    <label>Select Vendor</label>
+    <select asp-for="VendorId" asp-items="ViewBag.Vendors" class="form-control">
+        <option value="">-- Select Vendor --</option>
+    </select>
+
+    <br />
+
+    <label>Select Item</label>
+    <select asp-for="ItemId" asp-items="ViewBag.Items" class="form-control">
+        <option value="">-- Select Item --</option>
+    </select>
+
+    <br />
+
+    <label>Vendor Specific Price</label>
+    <input asp-for="UnitPrice" class="form-control" />
+    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+
+    <br /><br />
+
+    <button type="submit" class="btn btn-success">Save Mapping</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "VendorId": 1,
+    "ItemId": 1,
+    "UnitPrice": 650
+  },
+  {
+    "Id": 2,
+    "VendorId": 1,
+    "ItemId": 4,
+    "UnitPrice": 40
+  },
+  {
+    "Id": 3,
+    "VendorId": 2,
+    "ItemId": 2,
+    "UnitPrice": 1000
+  },
+  {
+    "Id": 4,
+    "VendorId": 2,
+    "ItemId": 4,
+    "UnitPrice": 35
+  }
+]

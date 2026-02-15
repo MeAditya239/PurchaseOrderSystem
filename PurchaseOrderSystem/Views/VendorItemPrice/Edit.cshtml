@@ -1,0 +1,19 @@
+﻿@model PurchaseOrderSystem.Models.VendorItemPrice
+
+<h2>Edit Vendor Item Price</h2>
+
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="VendorId" />
+    <input type="hidden" asp-for="ItemId" />
+
+    <label>Update Price</label>
+    <input asp-for="UnitPrice" class="form-control" />
+    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+
+    <br />
+
+    <button type="submit" class="btn btn-success">Update Price</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

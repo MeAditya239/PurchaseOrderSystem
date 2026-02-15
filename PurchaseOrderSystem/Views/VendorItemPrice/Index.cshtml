@@ -1,0 +1,47 @@
+﻿@model List<PurchaseOrderSystem.Models.ViewModels.VendorItemPriceVM>
+
+<h2>Vendor Item Price Mapping</h2>
+
+<a asp-action="Create" class="btn btn-primary">Add Mapping</a>
+
+<table class="table table-bordered mt-3">
+    <tr>
+
+        <th>ID</th>
+        <th>Vendor</th>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Actions</th>
+
+    </tr>
+
+    @foreach (var m in Model)
+    {
+        <tr>
+            <td>@m.Id</td>
+            <td>@m.VendorName</td>
+            <td>@m.ItemName</td>
+            <td>@m.UnitPrice</td>
+
+            <!-- Edit button -->
+            <td>
+                <a asp-action="Edit"
+                   asp-route-id="@m.Id"
+                   class="btn btn-warning btn-sm">
+                    Edit Price
+                </a>
+
+
+                <!-- delete button --> 
+
+                <a asp-action="Delete"
+                   asp-route-id="@m.Id"
+                   class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+
+            </td>
+
+        </tr>
+    }
+</table>

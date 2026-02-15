@@ -1,0 +1,35 @@
+﻿
+@model List<PurchaseOrderSystem.Models.Vendor>
+
+<h2>Vendor Master</h2>
+
+<a asp-action="Create" class="btn btn-primary">Add Vendor</a>
+
+<table class="table table-bordered mt-3">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Email</th>
+        <th>Active</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var v in Model)
+    {
+        <tr>
+            <td>@v.VendorId</td>
+            <td>@v.VendorName</td>
+            <td>@v.ContactNumber</td>
+            <td>@v.Email</td>
+            <td>@v.IsActive</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@v.VendorId"
+                   class="btn btn-warning btn-sm">Edit</a>
+
+                <a asp-action="Delete" asp-route-id="@v.VendorId"
+                   class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+    }
+</table>

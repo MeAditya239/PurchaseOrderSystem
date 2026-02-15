@@ -1,0 +1,65 @@
+﻿@model PurchaseOrderSystem.Models.Vendor
+
+<h2>Add Vendor</h2>
+
+<form asp-action="Create" method="post" onsubmit="return validateVendorForm()">
+
+    <label>Vendor Name</label>
+    <input asp-for="VendorName" id="vendorName" class="form-control" />
+    <span asp-validation-for="VendorName" class="text-danger"></span>
+    <small id="nameError" class="text-danger"></small>
+
+    <br />
+
+    <label>Contact Number</label>
+    <input asp-for="ContactNumber" id="contactNumber"
+           class="form-control" maxlength="10" />
+    <span asp-validation-for="ContactNumber" class="text-danger"></span>
+    <small id="mobileError" class="text-danger"></small>
+
+    <br />
+
+    <label>Email</label>
+    <input asp-for="Email" id="email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+    <small id="emailError" class="text-danger"></small>
+
+    <br />
+
+    <label>Is Active</label>
+    <input asp-for="IsActive" type="checkbox" />
+
+    <br /><br />
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+<script>
+    function validateVendorForm() {
+
+        let isValid = true;
+
+        let name = document.getElementById("vendorName").value;
+        let mobile = document.getElementById("contactNumber").value;
+
+        document.getElementById("nameError").innerText = "";
+        document.getElementById("mobileError").innerText = "";
+
+        let nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(name)) {
+            document.getElementById("nameError").innerText =
+                "Name must contain only alphabets.";
+            isValid = false;
+        }
+
+        let mobileRegex = /^[0-9]{10}$/;
+        if (!mobileRegex.test(mobile)) {
+            document.getElementById("mobileError").innerText =
+                "Mobile must be exactly 10 digits.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+</script>

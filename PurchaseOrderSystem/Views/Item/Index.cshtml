@@ -1,0 +1,34 @@
+﻿@model List<PurchaseOrderSystem.Models.Item>
+
+<h2>Item Master</h2>
+
+<a asp-action="Create" class="btn btn-primary">Add Item</a>
+
+<table class="table table-bordered mt-3">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Unit Price</th>
+        <th>Available Qty</th>
+        <th>Active</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.ItemId</td>
+            <td>@i.ItemName</td>
+            <td>@i.UnitPrice</td>
+            <td>@i.AvailableQuantity</td>
+            <td>@i.IsActive</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@i.ItemId"
+                   class="btn btn-warning btn-sm">Edit</a>
+
+                <a asp-action="Delete" asp-route-id="@i.ItemId"
+                   class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+    }
+</table>

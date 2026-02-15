@@ -1,0 +1,258 @@
+﻿@model PurchaseOrderSystem.Models.PurchaseOrder
+
+<h2>Create Purchase Order</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+
+@if (TempData["Success"] != null)
+{
+    <p style="color:green">@TempData["Success"]</p>
+}
+
+<form asp-action="Create" method="post" onsubmit="return prepareItemsForSubmit()">
+
+    <!-- Header Section -->
+    <label>PO Date</label>
+    <input asp-for="PODate" type="date" class="form-control" />
+
+    <br />
+
+    <label>Select Vendor</label>
+    <select asp-for="VendorId" asp-items="ViewBag.Vendors"
+            class="form-control" id="VendorId">
+        <option value="">-- Select Vendor --</option>
+    </select>
+
+    <br />
+
+    <!-- Item Add Section -->
+    <h4>Add Items</h4>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label>Item</label>
+            <select id="itemDropdown" class="form-control">
+                <option value="">-- Select Item --</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Qty</label>
+            <input type="number" id="qty" class="form-control" min="1" />
+        </div>
+
+        <div class="col-md-3">
+            <label>Unit Price</label>
+            <input type="text" id="price" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-3">
+            <label>Line Total</label>
+            <input type="text" id="lineTotal" class="form-control" readonly />
+        </div>
+    </div>
+
+    <br />
+
+    <button type="button" class="btn btn-primary" onclick="addItemToGrid()">
+        + Add Item
+    </button>
+
+    <hr />
+
+    <!-- Items Grid -->
+    <h4>PO Items</h4>
+
+    <table class="table table-bordered" id="poGrid">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Line Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody></tbody>
+    </table>
+
+    <!-- Total -->
+    <h4>Total Amount: <span id="totalAmount">0</span></h4>
+
+    <br />
+
+    <!-- Hidden Items Container -->
+    <div id="hiddenItems"></div>
+
+    <button type="submit" class="btn btn-success">
+        Save Purchase Order
+    </button>
+</form>
+
+<!--  Scripts -->
+<script>
+
+    let poItems = [];
+
+        document.getElementById("VendorId").addEventListener("change", function () {
+
+        //  FIX: Clear old added items when vendor changes
+        poItems = [];
+        refreshGrid();
+
+        let vendorId = this.value;
+        let itemDropdown = document.getElementById("itemDropdown");
+
+        // Reset dropdown + fields
+        itemDropdown.innerHTML = "<option value=''>-- Select Item --</option>";
+        document.getElementById("qty").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("lineTotal").value = "";
+
+        if (vendorId === "") return;
+
+        fetch(`/PurchaseOrder/GetVendorItems?vendorId=${vendorId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                data.forEach(item => {
+                    let option = document.createElement("option");
+                    option.value = item.itemId;
+                    option.text = item.itemName;
+                    option.dataset.price = item.unitPrice;
+
+                    itemDropdown.appendChild(option);
+                });
+
+            });
+    });
+
+
+    //  Item Change → Fill Price
+    document.getElementById("itemDropdown").addEventListener("change", function () {
+
+        let selected = this.options[this.selectedIndex];
+        document.getElementById("price").value = selected.dataset.price || "";
+        calculateLineTotal();
+    });
+
+    // ✅ Qty Change → Calculate Total
+    document.getElementById("qty").addEventListener("input", calculateLineTotal);
+
+    function calculateLineTotal() {
+
+        let qty = parseInt(document.getElementById("qty").value);
+        let price = parseFloat(document.getElementById("price").value);
+
+        if (!qty || !price) {
+            document.getElementById("lineTotal").value = "";
+            return;
+        }
+
+        document.getElementById("lineTotal").value = qty * price;
+    }
+
+    // ✅ Add Item To Grid
+    function addItemToGrid() {
+
+        let itemDropdown = document.getElementById("itemDropdown");
+        let itemId = itemDropdown.value;
+        let itemName = itemDropdown.options[itemDropdown.selectedIndex].text;
+        let qty = parseInt(document.getElementById("qty").value);
+        let price = parseFloat(document.getElementById("price").value);
+
+        if (itemId === "" || !qty || qty <= 0) {
+            alert("Please select item and enter valid quantity!");
+            return;
+        }
+
+        let lineTotal = qty * price;
+
+            //  Add to array (FIX: Convert ItemId to int)
+    poItems.push({
+        itemId: parseInt(itemId),
+        itemName: itemName,
+        quantity: qty,
+        unitPrice: price,
+        lineTotal: lineTotal
+    });
+
+
+        refreshGrid();
+        resetInputs();
+    }
+
+    //  Refresh Grid UI
+    function refreshGrid() {
+
+        let tbody = document.querySelector("#poGrid tbody");
+        tbody.innerHTML = "";
+
+        let total = 0;
+
+        poItems.forEach((item, index) => {
+
+            total += item.lineTotal;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.itemName}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice}</td>
+                    <td>${item.lineTotal}</td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="removeItem(${index})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("totalAmount").innerText = total;
+    }
+
+    //  Remove Item
+    function removeItem(index) {
+        poItems.splice(index, 1);
+        refreshGrid();
+    }
+
+    //  Reset Input Fields
+    function resetInputs() {
+        document.getElementById("itemDropdown").value = "";
+        document.getElementById("qty").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("lineTotal").value = "";
+    }
+
+    //  Prepare Items For Submit (Bind to MVC Model)
+    function prepareItemsForSubmit() {
+
+        if (poItems.length === 0) {
+            alert("Please add at least one item!");
+            return false;
+        }
+
+        let container = document.getElementById("hiddenItems");
+        container.innerHTML = "";
+
+        poItems.forEach((item, index) => {
+
+            container.innerHTML += `
+                <input type="hidden" name="Items[${index}].ItemId" value="${parseInt(item.itemId)}" />
+                <input type="hidden" name="Items[${index}].Quantity" value="${item.quantity}" />
+                <input type="hidden" name="Items[${index}].UnitPrice" value="${item.unitPrice}" />
+            `;
+        });
+
+        return true;
+    }
+
+</script>

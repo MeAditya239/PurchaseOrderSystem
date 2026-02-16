@@ -24,7 +24,14 @@
     "ItemId": 4,
     "ItemName": "Brush",
     "UnitPrice": 50,
-    "AvailableQuantity": 300,
+    "AvailableQuantity": 298,
+    "IsActive": true
+  },
+  {
+    "ItemId": 5,
+    "ItemName": "Mechanical Robot",
+    "UnitPrice": 4000.00,
+    "AvailableQuantity": 50,
     "IsActive": true
   }
 ]

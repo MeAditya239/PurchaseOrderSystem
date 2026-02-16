@@ -1,6 +1,6 @@
 ﻿@model PurchaseOrderSystem.Models.PurchaseOrder
 
-<h2>Create Purchase Order</h2>
+<h2>Purchase Order Screen (Create / Edit / Delete)</h2>
 
 @if (ViewBag.Error != null)
 {
@@ -14,7 +14,25 @@
 
 <form asp-action="Create" method="post" onsubmit="return prepareItemsForSubmit()">
 
-    <!-- Header Section -->
+    <!-- ✅ PO Selection (Edit/Delete Existing) -->
+    <label>Select PO Number (Edit/Delete)</label>
+    <select id="poSelect" class="form-control">
+        <option value="">-- New Purchase Order --</option>
+
+        @foreach (var po in ViewBag.POs)
+        {
+            <option value="@po.PONumber">
+                PO-@po.PONumber
+            </option>
+        }
+    </select>
+
+    <br />
+
+    <!-- Hidden PO Number -->
+    <input type="hidden" asp-for="PONumber" id="PONumber" />
+
+    <!-- ✅ Header Section -->
     <label>PO Date</label>
     <input asp-for="PODate" type="date" class="form-control" />
 
@@ -28,7 +46,7 @@
 
     <br />
 
-    <!-- Item Add Section -->
+    <!-- ✅ Item Add Section -->
     <h4>Add Items</h4>
 
     <div class="row">
@@ -63,7 +81,7 @@
 
     <hr />
 
-    <!-- Items Grid -->
+    <!-- ✅ Items Grid -->
     <h4>PO Items</h4>
 
     <table class="table table-bordered" id="poGrid">
@@ -80,7 +98,7 @@
         <tbody></tbody>
     </table>
 
-    <!-- Total -->
+    <!-- ✅ Total -->
     <h4>Total Amount: <span id="totalAmount">0</span></h4>
 
     <br />
@@ -88,30 +106,37 @@
     <!-- Hidden Items Container -->
     <div id="hiddenItems"></div>
 
+    <!-- ✅ Buttons -->
     <button type="submit" class="btn btn-success">
-        Save Purchase Order
+        Save / Update PO
     </button>
+
+    <button type="button" class="btn btn-danger" onclick="deletePO()">
+        Delete PO
+    </button>
+
+    <a asp-controller="Home" asp-action="Index"
+       class="btn btn-secondary">
+        Exit
+    </a>
+
 </form>
 
-<!--  Scripts -->
+<!-- ✅ Scripts -->
 <script>
 
     let poItems = [];
 
-        document.getElementById("VendorId").addEventListener("change", function () {
+    // ✅ Vendor Change → Load Vendor Mapped Items
+    document.getElementById("VendorId").addEventListener("change", function () {
 
-        //  FIX: Clear old added items when vendor changes
         poItems = [];
         refreshGrid();
 
         let vendorId = this.value;
         let itemDropdown = document.getElementById("itemDropdown");
 
-        // Reset dropdown + fields
         itemDropdown.innerHTML = "<option value=''>-- Select Item --</option>";
-        document.getElementById("qty").value = "";
-        document.getElementById("price").value = "";
-        document.getElementById("lineTotal").value = "";
 
         if (vendorId === "") return;
 
@@ -131,8 +156,7 @@
             });
     });
 
-
-    //  Item Change → Fill Price
+    // ✅ Item Change → Fill Price
     document.getElementById("itemDropdown").addEventListener("change", function () {
 
         let selected = this.options[this.selectedIndex];
@@ -140,7 +164,7 @@
         calculateLineTotal();
     });
 
-    // ✅ Qty Change → Calculate Total
+    // Qty Change → Calculate Total
     document.getElementById("qty").addEventListener("input", calculateLineTotal);
 
     function calculateLineTotal() {
@@ -172,21 +196,19 @@
 
         let lineTotal = qty * price;
 
-            //  Add to array (FIX: Convert ItemId to int)
-    poItems.push({
-        itemId: parseInt(itemId),
-        itemName: itemName,
-        quantity: qty,
-        unitPrice: price,
-        lineTotal: lineTotal
-    });
-
+        poItems.push({
+            itemId: parseInt(itemId),
+            itemName: itemName,
+            quantity: qty,
+            unitPrice: price,
+            lineTotal: lineTotal
+        });
 
         refreshGrid();
         resetInputs();
     }
 
-    //  Refresh Grid UI
+    // Refresh Grid UI
     function refreshGrid() {
 
         let tbody = document.querySelector("#poGrid tbody");
@@ -218,13 +240,11 @@
         document.getElementById("totalAmount").innerText = total;
     }
 
-    //  Remove Item
     function removeItem(index) {
         poItems.splice(index, 1);
         refreshGrid();
     }
 
-    //  Reset Input Fields
     function resetInputs() {
         document.getElementById("itemDropdown").value = "";
         document.getElementById("qty").value = "";
@@ -232,7 +252,7 @@
         document.getElementById("lineTotal").value = "";
     }
 
-    //  Prepare Items For Submit (Bind to MVC Model)
+    // Prepare Items For Submit
     function prepareItemsForSubmit() {
 
         if (poItems.length === 0) {
@@ -246,13 +266,75 @@
         poItems.forEach((item, index) => {
 
             container.innerHTML += `
-                <input type="hidden" name="Items[${index}].ItemId" value="${parseInt(item.itemId)}" />
+                <input type="hidden" name="Items[${index}].ItemId" value="${item.itemId}" />
                 <input type="hidden" name="Items[${index}].Quantity" value="${item.quantity}" />
                 <input type="hidden" name="Items[${index}].UnitPrice" value="${item.unitPrice}" />
             `;
         });
 
         return true;
+    }
+
+    // ✅ Load Existing PO for Edit
+    document.getElementById("poSelect").addEventListener("change", function () {
+
+        let poNumber = this.value;
+
+        if (poNumber === "") {
+            document.getElementById("PONumber").value = 0;
+            poItems = [];
+            refreshGrid();
+            return;
+        }
+
+        fetch(`/PurchaseOrder/GetPO?poNumber=${poNumber}`)
+            .then(res => res.json())
+            .then(po => {
+
+                document.getElementById("PONumber").value = po.poNumber;
+                document.getElementById("VendorId").value = po.vendorId;
+
+                poItems = [];
+
+                po.items.forEach(i => {
+                    poItems.push({
+                        itemId: i.itemId,
+                        itemName: i.itemName,
+                        quantity: i.quantity,
+                        unitPrice: i.unitPrice,
+                        lineTotal: i.quantity * i.unitPrice
+                    });
+                });
+
+                refreshGrid();
+            });
+    });
+
+    // ✅ Delete PO Function
+    function deletePO() {
+
+        let poNumber = document.getElementById("PONumber").value;
+
+        if (poNumber == 0) {
+            alert("Please select an existing PO to delete!");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to delete this Purchase Order?"))
+            return;
+
+        let form = document.createElement("form");
+        form.method = "post";
+        form.action = "/PurchaseOrder/DeletePO";
+
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "poNumber";
+        input.value = poNumber;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
     }
 
 </script>

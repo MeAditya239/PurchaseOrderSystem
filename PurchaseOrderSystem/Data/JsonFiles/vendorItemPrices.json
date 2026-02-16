@@ -22,5 +22,17 @@
     "VendorId": 2,
     "ItemId": 4,
     "UnitPrice": 35
+  },
+  {
+    "Id": 5,
+    "VendorId": 3,
+    "ItemId": 1,
+    "UnitPrice": 300
+  },
+  {
+    "Id": 6,
+    "VendorId": 3,
+    "ItemId": 5,
+    "UnitPrice": 4000
   }
 ]

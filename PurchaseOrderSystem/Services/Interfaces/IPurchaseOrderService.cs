@@ -6,5 +6,11 @@ namespace PurchaseOrderSystem.Services.Interfaces
     {
         void Save(PurchaseOrder po);
         List<PurchaseOrder> GetAll();
+        PurchaseOrder? GetById(int poNumber);
+
+        void Update(PurchaseOrder po);
+
+        void Delete(int poNumber);
+
     }
 }

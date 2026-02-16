@@ -12,5 +12,12 @@
     "ContactNumber": "8978675642",
     "Email": "virat@gmail.com",
     "IsActive": true
+  },
+  {
+    "VendorId": 3,
+    "VendorName": "Henry",
+    "ContactNumber": "2345654326",
+    "Email": "henry@123gmail.com",
+    "IsActive": true
   }
 ]

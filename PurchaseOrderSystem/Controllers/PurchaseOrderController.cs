@@ -26,19 +26,54 @@ namespace PurchaseOrderSystem.Controllers
 
         public IActionResult Create()
         {
+            // ✅ Workflow Validation (Doc Business Rule)
+
+            if (!_vendorService.GetAll().Any())
+            {
+                TempData["Error"] = "Please create Vendor first before Purchase Order!";
+                return RedirectToAction("Index", "Vendor");
+            }
+
+            if (!_itemService.GetAll().Any())
+            {
+                TempData["Error"] = "Please create Items first before Purchase Order!";
+                return RedirectToAction("Index", "Item");
+            }
+
+            if (!_priceService.GetAll().Any())
+            {
+                TempData["Error"] = "Please map Vendor-Item Prices first before Purchase Order!";
+                return RedirectToAction("Index", "VendorItemPrice");
+            }
+
             LoadVendors();
+
+            ViewBag.POs = _poService.GetAll();
+
             return View(new PurchaseOrder { PODate = DateTime.Today });
         }
+
+
 
         [HttpPost]
         public IActionResult Create(PurchaseOrder po)
         {
             LoadVendors();
+            ViewBag.POs = _poService.GetAll();
 
             try
             {
-                _poService.Save(po);
-                TempData["Success"] = "Purchase Order Saved Successfully!";
+                if (po.PONumber == 0)
+                {
+                    _poService.Save(po);
+                    TempData["Success"] = "Purchase Order Created Successfully!";
+                }
+                else
+                {
+                    _poService.Update(po);
+                    TempData["Success"] = "Purchase Order Updated Successfully!";
+                }
+
                 return RedirectToAction("Create");
             }
             catch (Exception ex)
@@ -47,6 +82,7 @@ namespace PurchaseOrderSystem.Controllers
                 return View(po);
             }
         }
+
 
         [HttpGet]
         public JsonResult GetVendorItems(int vendorId)
@@ -66,6 +102,31 @@ namespace PurchaseOrderSystem.Controllers
 
             return Json(result);
         }
+
+
+        [HttpPost]
+        public IActionResult DeletePO(int poNumber)
+        {
+            try
+            {
+                _poService.Delete(poNumber);
+                TempData["Success"] = "Purchase Order Deleted Successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction("Create");
+        }
+
+        [HttpGet]
+        public JsonResult GetPO(int poNumber)
+        {
+            var po = _poService.GetById(poNumber);
+            return Json(po);
+        }
+
 
         private void LoadVendors()
         {

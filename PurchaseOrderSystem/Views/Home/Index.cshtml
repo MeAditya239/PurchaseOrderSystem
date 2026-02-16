@@ -1,8 +1,61 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<h2 class="mb-4">Purchase Order Management System</h2>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<p class="text-muted">
+    Welcome! Use the modules below to manage Vendors, Items, Pricing and Purchase Orders.
+</p>
+
+<div class="row mt-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Vendor Master</h5>
+                <p>Add / Edit Vendors</p>
+                <a asp-controller="Vendor" asp-action="Index"
+                   class="btn btn-primary">
+                    Open
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Item Master</h5>
+                <p>Add / Edit Items</p>
+                <a asp-controller="Item" asp-action="Index"
+                   class="btn btn-success">
+                    Open
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Vendor Pricing</h5>
+                <p>Map Vendor Item Prices</p>
+                <a asp-controller="VendorItemPrice" asp-action="Index"
+                   class="btn btn-warning">
+                    Open
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Purchase Orders</h5>
+                <p>Create / Edit / Delete PO</p>
+                <a asp-controller="PurchaseOrder" asp-action="Create"
+                   class="btn btn-dark">
+                    Open
+                </a>
+            </div>
+        </div>
+    </div>
+
 </div>

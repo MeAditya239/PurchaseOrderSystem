@@ -19,19 +19,62 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
+                        <!-- Dashboard -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark"
+                               asp-controller="Home" asp-action="Index">
+                                Dashboard
+                            </a>
                         </li>
+
+                        <!-- Vendor Master -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark"
+                               asp-controller="Vendor" asp-action="Index">
+                                Vendor Master
+                            </a>
                         </li>
+
+                        <!-- Item Master -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-controller="Item" asp-action="Index">
+                                Item Master
+                            </a>
+                        </li>
+
+                        <!-- Vendor Item Price Mapping -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-controller="VendorItemPrice" asp-action="Index">
+                                Vendor Price Mapping
+                            </a>
+                        </li>
+
+                        <!-- Purchase Order Screen -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-controller="PurchaseOrder" asp-action="Create">
+                                Purchase Order
+                            </a>
+                        </li>
+
                     </ul>
+
                 </div>
             </div>
         </nav>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

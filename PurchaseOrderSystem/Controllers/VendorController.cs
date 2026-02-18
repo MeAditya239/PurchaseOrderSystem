@@ -7,10 +7,13 @@ namespace PurchaseOrderSystem.Controllers
     public class VendorController : Controller
     {
         private readonly IVendorService _vendorService;
+        private readonly ILogger<VendorController> _logger;
 
-        public VendorController(IVendorService vendorService)
+        public VendorController(IVendorService vendorService,
+            ILogger<VendorController> logger)
         {
             _vendorService = vendorService;
+            _logger = logger;
         }
 
 
@@ -32,10 +35,26 @@ namespace PurchaseOrderSystem.Controllers
             if (!ModelState.IsValid)
             {
                 return View(vendor);
-            }               
+            }
 
-            _vendorService.Add(vendor);
-            return RedirectToAction("Index");
+            try
+            {
+                _vendorService.Add(vendor);
+
+                _logger.LogInformation("Vendor Created Successfully: {VendorName}",
+                    vendor.VendorName);
+
+                TempData["Success"] = "Vendor Added Successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while creating Vendor");
+
+                ViewBag.Error = ex.Message;
+                return View(vendor);
+            }
+            
         }
 
         //  Edit Vendor
@@ -61,8 +80,23 @@ namespace PurchaseOrderSystem.Controllers
                 return View(vendor);
             }
 
-            _vendorService.Update(vendor);
-            return RedirectToAction("Index");
+            try
+            {
+                _vendorService.Update(vendor);
+
+                _logger.LogInformation("Vendor Updated Successfully. VendorId: {VendorId}",
+                    vendor.VendorId);
+
+                TempData["Success"] = "Vendor Updated Successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating Vendor");
+
+                ViewBag.Error = ex.Message;
+                return View(vendor);
+            }
         }
 
         //  Delete Vendor
@@ -81,7 +115,21 @@ namespace PurchaseOrderSystem.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _vendorService.Delete(id);
+            try
+            {
+                _vendorService.Delete(id);
+
+                _logger.LogInformation("Vendor Deleted Successfully. VendorId: {VendorId}", id);
+
+                TempData["Success"] = "Vendor Deleted Successfully!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while deleting Vendor");
+
+                TempData["Error"] = ex.Message;
+            }
+
             return RedirectToAction("Index");
         }
     }

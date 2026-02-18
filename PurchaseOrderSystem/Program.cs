@@ -5,6 +5,13 @@ using PurchaseOrderSystem.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// File Logger
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddProvider(
+    new PurchaseOrderSystem.Logging.FileLoggerProvider("Logs/app-log.txt")
+);
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

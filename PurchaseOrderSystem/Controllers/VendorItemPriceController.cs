@@ -11,16 +11,21 @@ namespace PurchaseOrderSystem.Controllers
         private readonly IVendorService _vendorService;
         private readonly IItemService _itemService;
 
+        private readonly ILogger<VendorItemPriceController> _logger;
+
         public VendorItemPriceController(
             IVendorItemPriceService mappingService,
             IVendorService vendorService,
-            IItemService itemService)
+            IItemService itemService,
+            ILogger<VendorItemPriceController> logger)
         {
             _mappingService = mappingService;
             _vendorService = vendorService;
             _itemService = itemService;
+            _logger = logger;
         }
 
+        // ✅ List Mappings
         public IActionResult Index()
         {
             var mappings = _mappingService.GetAll();
@@ -38,7 +43,7 @@ namespace PurchaseOrderSystem.Controllers
             return View(result);
         }
 
-
+        // ✅ Create Mapping
         public IActionResult Create()
         {
             LoadDropdowns();
@@ -54,29 +59,38 @@ namespace PurchaseOrderSystem.Controllers
             {
                 return View(mapping);
             }
-                
 
             try
             {
                 _mappingService.Add(mapping);
+
+                _logger.LogInformation(
+                    "Vendor-Item Price Mapping Created. VendorId={VendorId}, ItemId={ItemId}",
+                    mapping.VendorId, mapping.ItemId);
+
+                TempData["Success"] = "Mapping Added Successfully!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while creating Vendor-Item Mapping");
+
                 ViewBag.Error = ex.Message;
                 return View(mapping);
             }
         }
 
+        // ✅ Edit Mapping
         public IActionResult Edit(int id)
         {
+            LoadDropdowns();
+
             var mapping = _mappingService.GetById(id);
 
             if (mapping == null)
             {
                 return NotFound();
             }
-              
 
             return View(mapping);
         }
@@ -84,17 +98,34 @@ namespace PurchaseOrderSystem.Controllers
         [HttpPost]
         public IActionResult Edit(VendorItemPrice mapping)
         {
+            LoadDropdowns();
+
             if (!ModelState.IsValid)
             {
                 return View(mapping);
             }
-               
 
-            _mappingService.Update(mapping);
+            try
+            {
+                _mappingService.Update(mapping);
 
-            return RedirectToAction("Index");
+                _logger.LogInformation(
+                    "Vendor-Item Price Mapping Updated. MappingId={Id}",
+                    mapping.Id);
+
+                TempData["Success"] = "Mapping Updated Successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating Vendor-Item Mapping");
+
+                ViewBag.Error = ex.Message;
+                return View(mapping);
+            }
         }
 
+        // ✅ Delete Mapping
         public IActionResult Delete(int id)
         {
             var mapping = _mappingService.GetById(id);
@@ -103,7 +134,6 @@ namespace PurchaseOrderSystem.Controllers
             {
                 return NotFound();
             }
-                
 
             return View(mapping);
         }
@@ -111,11 +141,27 @@ namespace PurchaseOrderSystem.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _mappingService.Delete(id);
+            try
+            {
+                _mappingService.Delete(id);
+
+                _logger.LogInformation(
+                    "Vendor-Item Price Mapping Deleted. MappingId={Id}",
+                    id);
+
+                TempData["Success"] = "Mapping Deleted Successfully!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while deleting Vendor-Item Mapping");
+
+                TempData["Error"] = ex.Message;
+            }
+
             return RedirectToAction("Index");
         }
 
-
+        // ✅ Dropdown Loader
         private void LoadDropdowns()
         {
             ViewBag.Vendors = _vendorService.GetAll()

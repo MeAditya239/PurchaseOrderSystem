@@ -11,22 +11,26 @@ namespace PurchaseOrderSystem.Controllers
         private readonly IItemService _itemService;
         private readonly IVendorItemPriceService _priceService;
         private readonly IPurchaseOrderService _poService;
+        private readonly ILogger<PurchaseOrderController> _logger;
+
 
         public PurchaseOrderController(
             IVendorService vendorService,
             IItemService itemService,
             IVendorItemPriceService priceService,
-            IPurchaseOrderService poService)
+            IPurchaseOrderService poService,
+            ILogger<PurchaseOrderController> logger)
         {
             _vendorService = vendorService;
             _itemService = itemService;
             _priceService = priceService;
             _poService = poService;
+            _logger = logger;
         }
 
         public IActionResult Create()
         {
-            // ✅ Workflow Validation (Doc Business Rule)
+            //  Workflow Validation (Doc Business Rule)
 
             if (!_vendorService.GetAll().Any())
             {
@@ -66,11 +70,13 @@ namespace PurchaseOrderSystem.Controllers
                 if (po.PONumber == 0)
                 {
                     _poService.Save(po);
+                    _logger.LogInformation("New Purchase Order Created. VendorId: {VendorId}", po.VendorId);
                     TempData["Success"] = "Purchase Order Created Successfully!";
                 }
                 else
                 {
                     _poService.Update(po);
+                    _logger.LogInformation("Purchase Order Updated. PO No: {PONumber}", po.PONumber);
                     TempData["Success"] = "Purchase Order Updated Successfully!";
                 }
 
@@ -78,6 +84,7 @@ namespace PurchaseOrderSystem.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while saving Purchase Order");
                 ViewBag.Error = ex.Message;
                 return View(po);
             }
@@ -114,6 +121,7 @@ namespace PurchaseOrderSystem.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while deleting Purchase Order");
                 TempData["Error"] = ex.Message;
             }
 

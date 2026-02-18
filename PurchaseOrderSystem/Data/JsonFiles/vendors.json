@@ -19,5 +19,12 @@
     "ContactNumber": "2345654326",
     "Email": "henry@123gmail.com",
     "IsActive": true
+  },
+  {
+    "VendorId": 4,
+    "VendorName": "Tejas",
+    "ContactNumber": "7654879754",
+    "Email": "tejas@gmail.com",
+    "IsActive": true
   }
 ]
